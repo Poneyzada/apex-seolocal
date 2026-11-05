@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  # Motor de Inteligência & Auditoria (FastAPI + Playwright Headless)
+  apex-api:
+    build:
+      context: ./apps/api
+      dockerfile: Dockerfile
+    container_name: apex_api
+    restart: always
+    ports:
+      - "8000:8000"
+    environment:
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_ANON_KEY=${SUPABASE_ANON_KEY}
+      - SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY}
+      - GOOGLE_PSI_API_KEY=${GOOGLE_PSI_API_KEY}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+    networks:
+      - apex_network
+
+networks:
+  apex_network:
+    driver: bridge
