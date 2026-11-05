@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "apex-seo-suite": {
+      "command": "python",
+      "args": [
+        "c:/Users/Poneyzada/Desktop/Apex-SeoLocal/apex_mcp_server.py"
+      ],
+      "env": {
+        "PYTHONIOENCODING": "utf-8"
+      }
+    }
+  }
+}
