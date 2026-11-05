@@ -13,7 +13,8 @@ import {
   Layers,
   ChevronRight,
   Sparkles,
-  Users
+  Users,
+  X
 } from 'lucide-react';
 import { ActiveModule } from '@/types';
 
@@ -21,9 +22,17 @@ interface SidebarProps {
   currentModule: ActiveModule;
   onSelectModule: (mod: ActiveModule) => void;
   clientCount: number;
+  mobileOpen?: boolean;
+  onCloseMobile?: () => void;
 }
 
-export function Sidebar({ currentModule, onSelectModule, clientCount }: SidebarProps) {
+export function Sidebar({
+  currentModule,
+  onSelectModule,
+  clientCount,
+  mobileOpen = false,
+  onCloseMobile,
+}: SidebarProps) {
   const menuItems = [
     {
       id: 'overview' as ActiveModule,
@@ -49,9 +58,9 @@ export function Sidebar({ currentModule, onSelectModule, clientCount }: SidebarP
     {
       id: 'topical' as ActiveModule,
       name: 'M3: Topical & UGC',
-      badge: 'Clusters',
+      badge: 'GSC + Blog',
       icon: BookOpenCheck,
-      description: 'Autoridade Semântica & Reviews',
+      description: 'Search Console & Artigos IA',
     },
     {
       id: 'gtm' as ActiveModule,
@@ -83,12 +92,12 @@ export function Sidebar({ currentModule, onSelectModule, clientCount }: SidebarP
     },
   ];
 
-  return (
-    <aside className="w-72 bg-[#0c0e15]/90 backdrop-blur-xl border-r border-white/[0.08] flex flex-col h-screen sticky top-0 z-40 select-none">
+  const renderNavContent = (isMobile = false) => (
+    <>
       {/* Brand Header */}
-      <div className="p-5 border-b border-white/[0.08] flex items-center justify-between">
+      <div className="p-4 sm:p-5 border-b border-white/[0.08] flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-teal-400 via-emerald-500 to-cyan-600 flex items-center justify-center shadow-lg shadow-teal-500/25 text-slate-950 font-black text-xl tracking-wider">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-teal-400 via-emerald-500 to-cyan-600 flex items-center justify-center shadow-lg shadow-teal-500/25 text-slate-950 font-black text-xl tracking-wider flex-shrink-0">
             A
           </div>
           <div>
@@ -101,9 +110,19 @@ export function Sidebar({ currentModule, onSelectModule, clientCount }: SidebarP
             <p className="text-[11px] text-slate-400 font-medium">Enterprise Growth Suite</p>
           </div>
         </div>
+
+        {isMobile && onCloseMobile && (
+          <button
+            onClick={onCloseMobile}
+            className="p-2 rounded-xl text-slate-400 hover:text-white bg-white/[0.04] border border-white/[0.08]"
+            aria-label="Fechar Menu"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        )}
       </div>
 
-      {/* Nav Menu */}
+      {/* Nav Menu Items */}
       <div className="flex-1 overflow-y-auto px-3 py-4 space-y-1.5">
         <div className="px-3 pb-2 text-[10px] font-bold uppercase tracking-wider text-slate-400 flex items-center justify-between">
           <span>Módulos de Dominação</span>
@@ -117,7 +136,12 @@ export function Sidebar({ currentModule, onSelectModule, clientCount }: SidebarP
           return (
             <button
               key={item.id}
-              onClick={() => onSelectModule(item.id)}
+              onClick={() => {
+                onSelectModule(item.id);
+                if (isMobile && onCloseMobile) {
+                  onCloseMobile();
+                }
+              }}
               className={`w-full text-left p-3 rounded-xl transition-all flex items-start gap-3 group relative ${
                 isActive
                   ? 'bg-teal-500/15 text-teal-200 border border-teal-500/35 shadow-sm shadow-teal-500/10'
@@ -125,7 +149,7 @@ export function Sidebar({ currentModule, onSelectModule, clientCount }: SidebarP
               }`}
             >
               <div
-                className={`p-2 rounded-lg mt-0.5 transition-colors ${
+                className={`p-2 rounded-lg mt-0.5 transition-colors flex-shrink-0 ${
                   isActive
                     ? 'bg-teal-500/20 text-teal-300'
                     : 'bg-white/[0.05] text-slate-400 group-hover:text-teal-300'
@@ -136,11 +160,15 @@ export function Sidebar({ currentModule, onSelectModule, clientCount }: SidebarP
 
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between gap-1">
-                  <span className={`font-semibold text-xs tracking-tight truncate ${isActive ? 'text-white' : 'text-slate-200 group-hover:text-white'}`}>
+                  <span
+                    className={`font-semibold text-xs tracking-tight truncate ${
+                      isActive ? 'text-white' : 'text-slate-200 group-hover:text-white'
+                    }`}
+                  >
                     {item.name}
                   </span>
                   <span
-                    className={`text-[9px] px-1.5 py-0.5 rounded font-mono font-medium ${
+                    className={`text-[9px] px-1.5 py-0.5 rounded font-mono font-medium flex-shrink-0 ${
                       isActive
                         ? 'bg-teal-400/20 text-teal-300 border border-teal-400/30'
                         : 'bg-white/[0.05] text-slate-400'
@@ -177,6 +205,30 @@ export function Sidebar({ currentModule, onSelectModule, clientCount }: SidebarP
           </span>
         </div>
       </div>
-    </aside>
+    </>
+  );
+
+  return (
+    <>
+      {/* Desktop Sidebar (Fixa à esquerda apenas a partir de telas lg) */}
+      <aside className="hidden lg:flex w-72 bg-[#0c0e15]/90 backdrop-blur-xl border-r border-white/[0.08] flex-col h-screen sticky top-0 z-40 select-none">
+        {renderNavContent(false)}
+      </aside>
+
+      {/* Mobile Slide-over Drawer (Aparece em celulares e tablets ao clicar no menu) */}
+      {mobileOpen && (
+        <div className="fixed inset-0 z-50 lg:hidden flex animate-fadeIn">
+          {/* Backdrop Escuro com Blur */}
+          <div
+            className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm transition-opacity"
+            onClick={onCloseMobile}
+          />
+          {/* Gaveta Lateral */}
+          <aside className="relative w-80 max-w-[85vw] bg-[#0c0e15] border-r border-white/[0.1] flex flex-col h-full z-50 select-none shadow-2xl">
+            {renderNavContent(true)}
+          </aside>
+        </div>
+      )}
+    </>
   );
 }

@@ -12,7 +12,18 @@ import { Module5GeoGrid } from '@/components/modules/module5-geogrid';
 import { Module6ClientPortal } from '@/components/modules/module6-portal';
 import { ModulePipelineAndReviewBooster } from '@/components/modules/module7-crm';
 import { ClientTenant, ActiveModule } from '@/types';
-import { Plus, X, Building, Check } from 'lucide-react';
+import {
+  Plus,
+  X,
+  Building,
+  Check,
+  LayoutDashboard,
+  Flame,
+  BookOpenCheck,
+  MapPin,
+  Users,
+  Menu
+} from 'lucide-react';
 
 const INITIAL_CLIENTS: ClientTenant[] = [
   {
@@ -61,24 +72,25 @@ const INITIAL_CLIENTS: ClientTenant[] = [
     phone: '+5531991234567',
     email: 'urgencia@hidroexpress.com.br',
     website: 'https://hidroexpress.com.br',
-    primaryService: 'Desentupimento & Caça-Vazamentos',
+    primaryService: 'Desentupimento e Hidrojateamento 24h',
     neighborhood: 'Savassi',
     city: 'Belo Horizonte',
     state: 'MG',
-    latitude: -19.938124,
-    longitude: -43.933215,
-    primaryKeyword: 'desentupidora 24 horas savassi',
+    latitude: -19.938612,
+    longitude: -43.934167,
+    primaryKeyword: 'desentupidora 24 horas savassi bh',
     gbpStatus: 'warming_up',
-    rating: 5.0,
-    totalReviews: 42,
+    rating: 4.7,
+    totalReviews: 62,
   },
 ];
 
-export default function ApexDashboardApp() {
+export default function DashboardPage() {
   const [clients, setClients] = useState<ClientTenant[]>(INITIAL_CLIENTS);
   const [selectedClient, setSelectedClient] = useState<ClientTenant>(INITIAL_CLIENTS[0]);
   const [currentModule, setCurrentModule] = useState<ActiveModule>('overview');
   const [showAddModal, setShowAddModal] = useState(false);
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
   // New Client Form State
   const [newClientName, setNewClientName] = useState('');
@@ -124,12 +136,14 @@ export default function ApexDashboardApp() {
   };
 
   return (
-    <div className="flex min-h-screen bg-transparent text-slate-100">
-      {/* Sidebar de Navegação dos 6 Módulos */}
+    <div className="flex min-h-screen bg-transparent text-slate-100 relative">
+      {/* Sidebar de Navegação dos Módulos (Desktop + Drawer Mobile) */}
       <Sidebar
         currentModule={currentModule}
         onSelectModule={(mod) => setCurrentModule(mod)}
         clientCount={clients.length}
+        mobileOpen={mobileSidebarOpen}
+        onCloseMobile={() => setMobileSidebarOpen(false)}
       />
 
       {/* Main Content Area */}
@@ -139,9 +153,10 @@ export default function ApexDashboardApp() {
           selectedClient={selectedClient}
           onSelectClient={(c) => setSelectedClient(c)}
           onAddClient={() => setShowAddModal(true)}
+          onToggleMobileSidebar={() => setMobileSidebarOpen(!mobileSidebarOpen)}
         />
 
-        <main className="flex-1 p-6 lg:p-8 max-w-7xl mx-auto w-full">
+        <main className="flex-1 p-3.5 sm:p-5 lg:p-8 max-w-7xl mx-auto w-full pb-24 lg:pb-8">
           {currentModule === 'overview' && (
             <ExecutiveOverview
               client={selectedClient}
@@ -179,10 +194,71 @@ export default function ApexDashboardApp() {
         </main>
       </div>
 
+      {/* Mobile Bottom Navigation Bar (PWA Style - Fixo na base em celulares e tablets) */}
+      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#0c0e15]/95 backdrop-blur-xl border-t border-white/[0.08] px-2 py-2 flex items-center justify-around select-none">
+        <button
+          onClick={() => setCurrentModule('overview')}
+          className={`flex flex-col items-center gap-1 p-1.5 rounded-xl transition-colors ${
+            currentModule === 'overview' ? 'text-teal-400 font-bold' : 'text-slate-400 hover:text-slate-200'
+          }`}
+        >
+          <LayoutDashboard className="w-5 h-5" />
+          <span className="text-[10px] leading-none">Início</span>
+        </button>
+
+        <button
+          onClick={() => setCurrentModule('gbp')}
+          className={`flex flex-col items-center gap-1 p-1.5 rounded-xl transition-colors ${
+            currentModule === 'gbp' ? 'text-teal-400 font-bold' : 'text-slate-400 hover:text-slate-200'
+          }`}
+        >
+          <Flame className="w-5 h-5" />
+          <span className="text-[10px] leading-none">GBP</span>
+        </button>
+
+        <button
+          onClick={() => setCurrentModule('topical')}
+          className={`flex flex-col items-center gap-1 p-1.5 rounded-xl transition-colors ${
+            currentModule === 'topical' ? 'text-teal-400 font-bold' : 'text-slate-400 hover:text-slate-200'
+          }`}
+        >
+          <BookOpenCheck className="w-5 h-5" />
+          <span className="text-[10px] leading-none">GSC/Blog</span>
+        </button>
+
+        <button
+          onClick={() => setCurrentModule('geogrid')}
+          className={`flex flex-col items-center gap-1 p-1.5 rounded-xl transition-colors ${
+            currentModule === 'geogrid' ? 'text-teal-400 font-bold' : 'text-slate-400 hover:text-slate-200'
+          }`}
+        >
+          <MapPin className="w-5 h-5" />
+          <span className="text-[10px] leading-none">3-Pack</span>
+        </button>
+
+        <button
+          onClick={() => setCurrentModule('crm')}
+          className={`flex flex-col items-center gap-1 p-1.5 rounded-xl transition-colors ${
+            currentModule === 'crm' ? 'text-teal-400 font-bold' : 'text-slate-400 hover:text-slate-200'
+          }`}
+        >
+          <Users className="w-5 h-5" />
+          <span className="text-[10px] leading-none">CRM</span>
+        </button>
+
+        <button
+          onClick={() => setMobileSidebarOpen(true)}
+          className="flex flex-col items-center gap-1 p-1.5 rounded-xl text-slate-400 hover:text-slate-200 transition-colors"
+        >
+          <Menu className="w-5 h-5 text-teal-300" />
+          <span className="text-[10px] leading-none">Módulos</span>
+        </button>
+      </nav>
+
       {/* Modal Adicionar Cliente */}
       {showAddModal && (
-        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-[#0f121a] border border-white/[0.1] rounded-2xl w-full max-w-lg p-6 shadow-2xl relative animate-fadeIn">
+        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4">
+          <div className="bg-[#0f121a] border border-white/[0.1] rounded-2xl w-full max-w-lg p-5 sm:p-6 shadow-2xl relative animate-fadeIn max-h-[92vh] overflow-y-auto">
             <button
               onClick={() => setShowAddModal(false)}
               className="absolute right-4 top-4 text-slate-400 hover:text-white"
@@ -225,7 +301,7 @@ export default function ApexDashboardApp() {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="font-semibold text-slate-300 block mb-1">Serviço Principal</label>
                   <input
@@ -240,7 +316,7 @@ export default function ApexDashboardApp() {
                   <label className="font-semibold text-slate-300 block mb-1">Palavra-Chave Foco</label>
                   <input
                     type="text"
-                    placeholder="Ex: oficina mecanica pinheiros"
+                    placeholder="Ex: mecanica pinheiros sp"
                     value={newKeyword}
                     onChange={(e) => setNewKeyword(e.target.value)}
                     className="w-full px-3 py-2 rounded-lg bg-slate-950/80 border border-white/[0.08] text-white focus:outline-none focus:border-teal-400"
@@ -248,7 +324,7 @@ export default function ApexDashboardApp() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="font-semibold text-slate-300 block mb-1">Bairro</label>
                   <input
