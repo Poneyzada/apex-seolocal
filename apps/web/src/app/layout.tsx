@@ -4,6 +4,11 @@ import './globals.css';
 export const metadata: Metadata = {
   title: 'Apex Local & SEO Suite — Dominação de 3-Pack e Alta Conversão',
   description: 'SaaS Multi-Tenant de SEO Local, GBP Fast-Track, Core Web Vitals e GTM Automation.',
+  icons: {
+    icon: [{ url: '/icon.svg', type: 'image/svg+xml' }],
+    apple: [{ url: '/icon.svg', type: 'image/svg+xml' }],
+    shortcut: ['/icon.svg'],
+  },
 };
 
 export default function RootLayout({
