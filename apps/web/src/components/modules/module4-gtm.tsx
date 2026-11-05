@@ -119,8 +119,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   const handleTestHash = async () => {
     setIsHashing(true);
     try {
-      const emailH = await sha256GoogleNormalized(testEmail);
-      const phoneH = await sha256GoogleNormalized(testPhone);
+      const emailH = await sha256GoogleNormalized(testEmail, 'email');
+      const phoneH = await sha256GoogleNormalized(testPhone, 'phone');
       setHashResult({ emailHash: emailH, phoneHash: phoneH });
     } finally {
       setIsHashing(false);
